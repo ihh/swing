@@ -1,0 +1,4 @@
+To remove ES6 syntax (or most of it) and bundle with webpack:
+perl -i.bak -pe 's/(\([^\(\)*]*\)) *=>/function $1/g;s/\blet\b/var/g;s/(function.*?)([a-z]+)\b *(= *[^\(\),]+)(.*)/$1$2$4\n  if (typeof($2) === "undefined") { $2 $3 }/g' Card.js Direction.js Stack.js utilities.js
+webpack --entry ./webpack_index.js swing.js
+webpack --optimize-minimize --entry ./webpack_index.js swing.min.js

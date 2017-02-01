@@ -7,13 +7,13 @@ import Card from './Card';
  * @param {Object} config Stack configuration.
  * @returns {Object} An instance of Stack object.
  */
-const Stack = (config) => {
-  let eventEmitter;
-  let index;
-  let springSystem;
-  let stack;
+const Stack = function (config) {
+  var eventEmitter;
+  var index;
+  var springSystem;
+  var stack;
 
-  const construct = () => {
+  const construct = function () {
     stack = {};
     springSystem = new rebound.SpringSystem();
     eventEmitter = Sister();
@@ -27,7 +27,7 @@ const Stack = (config) => {
    *
    * @returns {Object}
    */
-  stack.getConfig = () => {
+  stack.getConfig = function () {
     return config;
   };
 
@@ -36,7 +36,7 @@ const Stack = (config) => {
    *
    * @returns {Sister}
    */
-  stack.getSpringSystem = () => {
+  stack.getSpringSystem = function () {
     return springSystem;
   };
 
@@ -47,7 +47,7 @@ const Stack = (config) => {
    * @param {string} listener
    * @returns {undefined}
    */
-  stack.on = (eventName, listener) => {
+  stack.on = function (eventName, listener) {
     eventEmitter.on(eventName, listener);
   };
 
@@ -57,7 +57,7 @@ const Stack = (config) => {
    * @param {HTMLElement} element
    * @returns {Card}
    */
-  stack.createCard = (element) => {
+  stack.createCard = function (element) {
     const card = Card(stack, element);
     const events = [
       'throwout',
@@ -74,15 +74,15 @@ const Stack = (config) => {
     ];
 
     // Proxy Card events to the Stack.
-    events.forEach((eventName) => {
-      card.on(eventName, (data) => {
+    events.forEach(function (eventName) {
+      card.on(eventName, function (data) {
         eventEmitter.trigger(eventName, data);
       });
     });
 
     index.push({
-      card,
-      element
+      card: card,
+      element: element
     });
 
     return card;
@@ -94,9 +94,9 @@ const Stack = (config) => {
    * @param {HTMLElement} element
    * @returns {Card|null}
    */
-  stack.getCard = (element) => {
+  stack.getCard = function (element) {
     const group = _.find(index, {
-      element
+      element: element
     });
 
     if (group) {
@@ -112,9 +112,9 @@ const Stack = (config) => {
    * @param {Card} card
    * @returns {null}
    */
-  stack.destroyCard = (card) => {
+  stack.destroyCard = function (card) {
     return _.remove(index, {
-      card
+      card: card
     });
   };
 

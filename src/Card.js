@@ -16,7 +16,7 @@ import {
  * @param {Direction[]} allowedDirections
  * @returns {Direction[]} computed direction
  */
-const computeDirection = (fromX, fromY, allowedDirections) => {
+const computeDirection = function (fromX, fromY, allowedDirections) {
   const isHorizontal = Math.abs(fromX) > Math.abs(fromY);
 
   const isLeftDirection = fromX < 0 ? Direction.LEFT : Direction.RIGHT;
@@ -36,29 +36,29 @@ const computeDirection = (fromX, fromY, allowedDirections) => {
  * @param {HTMLElement} targetElement
  * @returns {Object} An instance of Card.
  */
-const Card = (stack, targetElement) => {
-  let card;
-  let config;
-  let currentX;
-  let currentY;
-  let doMove;
-  let eventEmitter;
-  let isDraging;
-  let isPanning;
-  let lastThrow;
-  let lastTranslate;
-  let lastX;
-  let lastY;
-  let mc;
-  let onSpringUpdate;
-  let springSystem;
-  let springThrowIn;
-  let springThrowOut;
-  let throwDirectionToEventName;
-  let throwOutDistance;
-  let throwWhere;
+const Card = function (stack, targetElement) {
+  var card;
+  var config;
+  var currentX;
+  var currentY;
+  var doMove;
+  var eventEmitter;
+  var isDraging;
+  var isPanning;
+  var lastThrow;
+  var lastTranslate;
+  var lastX;
+  var lastY;
+  var mc;
+  var onSpringUpdate;
+  var springSystem;
+  var springThrowIn;
+  var springThrowOut;
+  var throwDirectionToEventName;
+  var throwOutDistance;
+  var throwWhere;
 
-  const construct = () => {
+  const construct = function () {
     card = {};
     config = Card.makeConfig(stack.getConfig());
     eventEmitter = Sister();
@@ -99,7 +99,7 @@ const Card = (stack, targetElement) => {
 
     Card.appendToParent(targetElement);
 
-    eventEmitter.on('panstart', () => {
+    eventEmitter.on('panstart', function () {
       Card.appendToParent(targetElement);
 
       eventEmitter.trigger('dragstart', {
@@ -120,12 +120,12 @@ const Card = (stack, targetElement) => {
       })();
     });
 
-    eventEmitter.on('panmove', (event) => {
+    eventEmitter.on('panmove', function (event) {
       currentX = event.deltaX;
       currentY = event.deltaY;
     });
 
-    eventEmitter.on('panend', (event) => {
+    eventEmitter.on('panend', function (event) {
       isDraging = false;
 
       const coordinateX = lastTranslate.coordinateX + event.deltaX;
@@ -156,13 +156,13 @@ const Card = (stack, targetElement) => {
     // "mousedown" event fires late on touch enabled devices, thus listening
     // to the touchstart event for touch enabled devices and mousedown otherwise.
     if (isTouchDevice()) {
-      targetElement.addEventListener('touchstart', (event) => {
+      targetElement.addEventListener('touchstart', function (event) {
         if (config.allowMovement(event, isTouchDevice())) {
           eventEmitter.trigger('panstart');
         }
       });
 
-      targetElement.addEventListener('touchend', () => {
+      targetElement.addEventListener('touchend', function () {
         if (isDraging && !isPanning) {
           eventEmitter.trigger('dragend', {
             target: targetElement
@@ -172,29 +172,29 @@ const Card = (stack, targetElement) => {
 
       // Disable scrolling while dragging the element on the touch enabled devices.
       // @see http://stackoverflow.com/a/12090055/368691
-      (() => {
-        let dragging;
+      (function () {
+        var dragging;
 
-        targetElement.addEventListener('touchstart', () => {
+        targetElement.addEventListener('touchstart', function () {
           dragging = true;
         });
 
-        targetElement.addEventListener('touchend', () => {
+        targetElement.addEventListener('touchend', function () {
           dragging = false;
         });
 
-        global.addEventListener('touchmove', (event) => {
+        global.addEventListener('touchmove', function (event) {
           if (dragging && config.allowMovement(event, isTouchDevice())) {
             event.preventDefault();
           }
         });
       })();
     } else {
-      targetElement.addEventListener('mousedown', () => {
+      targetElement.addEventListener('mousedown', function () {
         eventEmitter.trigger('panstart');
       });
 
-      targetElement.addEventListener('mouseup', () => {
+      targetElement.addEventListener('mouseup', function () {
         if (isDraging && !isPanning) {
           eventEmitter.trigger('dragend', {
             target: targetElement
@@ -203,17 +203,17 @@ const Card = (stack, targetElement) => {
       });
     }
 
-    mc.on('panstart', (event) => {
+    mc.on('panstart', function (event) {
       isPanning = true;
     });
 
-    mc.on('panmove', (event) => {
+    mc.on('panmove', function (event) {
       if (config.allowMovement(event, isTouchDevice())) {
         eventEmitter.trigger('panmove', event);
       }
     });
 
-    mc.on('panend', (event) => {
+    mc.on('panend', function (event) {
       eventEmitter.trigger('panend', event);
       if (config.allowMovement(event, isTouchDevice())) {
       isPanning = false;
@@ -222,12 +222,12 @@ const Card = (stack, targetElement) => {
     });
 
     springThrowIn.addListener({
-      onSpringAtRest: () => {
+      onSpringAtRest: function () {
         eventEmitter.trigger('throwinend', {
           target: targetElement
         });
       },
-      onSpringUpdate: (spring) => {
+      onSpringUpdate: function (spring) {
         const value = spring.getCurrentValue();
         const coordianteX = rebound.MathUtil.mapValueInRange(value, 0, 1, lastThrow.fromX, 0);
         const coordianteY = rebound.MathUtil.mapValueInRange(value, 0, 1, lastThrow.fromY, 0);
@@ -237,17 +237,17 @@ const Card = (stack, targetElement) => {
     });
 
     springThrowOut.addListener({
-      onSpringAtRest: () => {
+      onSpringAtRest: function () {
         eventEmitter.trigger('throwoutend', {
           target: targetElement
         });
       },
-      onSpringUpdate: (spring) => {
+      onSpringUpdate: function (spring) {
         const value = spring.getCurrentValue();
 
-        let coordianteX;
-        let coordianteY;
-        let directionFactor;
+        var coordianteX;
+        var coordianteY;
+        var directionFactor;
 
         if (lastThrow.direction === Direction.RIGHT || lastThrow.direction === Direction.LEFT) {
           directionFactor = lastThrow.direction === Direction.RIGHT ? 1 : -1;
@@ -268,7 +268,7 @@ const Card = (stack, targetElement) => {
      *
      * @returns {undefined}
      */
-    doMove = () => {
+    doMove = function () {
       if (currentX === lastX && currentY === lastY) {
         return;
       }
@@ -297,7 +297,7 @@ const Card = (stack, targetElement) => {
      * @param {number} coordinateY
      * @returns {undefined}
      */
-    onSpringUpdate = (coordinateX, coordinateY) => {
+    onSpringUpdate = function (coordinateX, coordinateY) {
       const rotation = config.rotation(coordinateX, coordinateY, targetElement, config.maxRotation);
 
       lastTranslate.coordinateX = coordinateX || 0;
@@ -313,7 +313,7 @@ const Card = (stack, targetElement) => {
      * @param {Direction} [direction]
      * @returns {undefined}
      */
-    throwWhere = (where, fromX, fromY, direction) => {
+    throwWhere = function (where, fromX, fromY, direction) {
       lastThrow.fromX = fromX;
       lastThrow.fromY = fromY;
 
@@ -362,7 +362,7 @@ const Card = (stack, targetElement) => {
    * @param {Direction} [direction]
    * @returns {undefined}
    */
-  card.throwIn = (coordinateX, coordinateY, direction) => {
+  card.throwIn = function (coordinateX, coordinateY, direction) {
     throwWhere(Card.THROW_IN, coordinateX, coordinateY, direction);
   };
 
@@ -374,7 +374,7 @@ const Card = (stack, targetElement) => {
    * @param {Direction} [direction]
    * @returns {undefined}
    */
-  card.throwOut = (coordinateX, coordinateY, direction) => {
+  card.throwOut = function (coordinateX, coordinateY, direction) {
     throwWhere(Card.THROW_OUT, coordinateX, coordinateY, direction);
   };
 
@@ -384,7 +384,7 @@ const Card = (stack, targetElement) => {
    *
    * @returns {undefined}
    */
-  card.destroy = () => {
+  card.destroy = function () {
     mc.destroy();
     springThrowIn.destroy();
     springThrowOut.destroy();
@@ -401,14 +401,15 @@ const Card = (stack, targetElement) => {
  * @param {Object} config
  * @returns {Object}
  */
-Card.makeConfig = (config = {}) => {
+Card.makeConfig = function (config) {
+  if (typeof(config) === "undefined") { config = {} }
   const defaultConfig = {
     allowedDirections: [
       Direction.RIGHT,
       Direction.LEFT,
       Direction.UP
     ],
-    allowMovement: () => {
+    allowMovement: function () {
       return true;
     },
     isThrowOut: Card.isThrowOut,
@@ -435,7 +436,7 @@ Card.makeConfig = (config = {}) => {
  * @param {number} rotation
  * @returns {undefined}
  */
-Card.transform = (element, coordinateX, coordinateY, rotation) => {
+Card.transform = function (element, coordinateX, coordinateY, rotation) {
   element.style[vendorPrefix('transform')] = 'translate3d(0, 0, 0) translate(' + coordinateX + 'px, ' + coordinateY + 'px) rotate(' + rotation + 'deg)';
 };
 
@@ -451,7 +452,7 @@ Card.transform = (element, coordinateX, coordinateY, rotation) => {
  * @param {HTMLElement} element The target element.
  * @returns {undefined}
  */
-Card.appendToParent = (element) => {
+Card.appendToParent = function (element) {
   const parentNode = element.parentNode;
   const siblings = elementChildren(parentNode);
   const targetIndex = siblings.indexOf(element);
@@ -472,7 +473,7 @@ Card.appendToParent = (element) => {
  * @param {HTMLElement} element Element.
  * @returns {number}
  */
-Card.throwOutConfidence = (xOffset, yOffset, element) => {
+Card.throwOutConfidence = function (xOffset, yOffset, element) {
   const xConfidence = Math.min(Math.abs(xOffset) / element.offsetWidth, 1);
   const yConfidence = Math.min(Math.abs(yOffset) / element.offsetHeight, 1);
 
@@ -490,7 +491,7 @@ Card.throwOutConfidence = (xOffset, yOffset, element) => {
  * @param {number} throwOutConfidence config.throwOutConfidence
  * @returns {boolean}
  */
-Card.isThrowOut = (xOffset, yOffset, element, throwOutConfidence) => {
+Card.isThrowOut = function (xOffset, yOffset, element, throwOutConfidence) {
   return throwOutConfidence === 1;
 };
 
@@ -501,7 +502,7 @@ Card.isThrowOut = (xOffset, yOffset, element, throwOutConfidence) => {
  * @param {number} max
  * @returns {number}
  */
-Card.throwOutDistance = (min, max) => {
+Card.throwOutDistance = function (min, max) {
   return _.random(min, max);
 };
 
@@ -514,7 +515,7 @@ Card.throwOutDistance = (min, max) => {
  * @param {number} maxRotation
  * @returns {number} Rotation angle expressed in degrees.
  */
-Card.rotation = (coordinateX, coordinateY, element, maxRotation) => {
+Card.rotation = function (coordinateX, coordinateY, element, maxRotation) {
   const horizontalOffset = Math.min(Math.max(coordinateX / element.offsetWidth, -1), 1);
   const verticalOffset = (coordinateY > 0 ? 1 : -1) * Math.min(Math.abs(coordinateY) / 100, 1);
   const rotation = horizontalOffset * verticalOffset * maxRotation;
