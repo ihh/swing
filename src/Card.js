@@ -188,7 +188,7 @@ const Card = function (stack, targetElement) {
           if (dragging && config.allowMovement(event, true)) {
             event.preventDefault();
           }
-        });
+        }, {passive:false});
       })();
     } else {
       targetElement.addEventListener('mousedown', function () {
